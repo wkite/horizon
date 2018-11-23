@@ -964,6 +964,22 @@ class DetachInterface(policy.PolicyTargetMixin, tables.LinkAction):
         return urls.reverse(self.url, args=[instance_id])
 
 
+def get_numa_topology(instance):
+    if instance.numa_topology is not None:
+        template_name = 'project/instances/_instance_numa_topology.html'
+        cpu = {}
+        memory = {}
+        for key in instance.numa_topology['cpu']:
+            cpu[str(key)] = sorted(instance.numa_topology['cpu'][key])
+            memory[str(key)] = instance.numa_topology['memory'][key]
+        context = {
+            "id": instance.id,
+            "cpu": cpu,
+            "memory": memory
+        }
+        return template.loader.render_to_string(template_name, context)
+    return _("Shared")
+
 def get_ips(instance):
     template_name = 'project/instances/_instance_ips.html'
     ip_groups = {}
@@ -1214,6 +1230,9 @@ class InstancesTable(tables.DataTable):
                                  verbose_name=_("Instance Name"))
     image_name = tables.WrappingColumn("image_name",
                                        verbose_name=_("Image Name"))
+    numa_topology = tables.Column(get_numa_topology,
+                                  sortable=False,
+                                  verbose_name=_("NUMA Topology"))
     ip = tables.Column(get_ips,
                        verbose_name=_("IP Address"),
                        attrs={'data-type': "ip"})

@@ -151,6 +151,9 @@ class AdminInstancesTable(tables.DataTable):
                                  verbose_name=_("Name"))
     image_name = tables.Column("image_name",
                                verbose_name=_("Image Name"))
+    numa_topology = tables.Column(project_tables.get_numa_topology,
+                                  sortable=False,
+                                  verbose_name=_("NUMA Topology"))
     ip = tables.Column(project_tables.get_ips,
                        verbose_name=_("IP Address"),
                        attrs={'data-type': "ip"})
