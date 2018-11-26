@@ -3,9 +3,626 @@
 {% block title %}{% trans "Hypervisor Servers" %}{% endblock %}
 
 {% block page_header %}
-  {% include "horizon/common/_detail_header.html" %}
-{% endblock %}
+<script src="/dashboard/static/dashboard/js/echarts.min.js"></script>
+<!--<script src='http://www.echartsjs.com/examples/vendors/echarts/echarts.min.js?_v_=1539619299314'></script>-->
+<div>
 
+    <!--<div>{{ abc }}</div>-->
+    <div class="chart-group col-sm-12">
+        <div id="main0"  style="width: 700px;height:350px;margin:0 auto"></div>
+    </div>
+    <!--<div id="pane0">{{ pane0 }}</div>-->
+        <!--<div id="RAM0" class="c2" style="width: 400px;height:200px"></div>-->
+        <div id="a" node0="{{ node0 }}" pane0="{{ pane0 }}" pane1="{{ pane1 }}" pane2="{{ pane2 }}" pane3="{{ pane3 }}" pane4="{{ pane4 }}" pane5="{{ pane5 }}" pane6="{{ pane6 }}" pane7="{{ pane7 }}"></div>
+    </div>
+    <script type="text/javascript">
+                var myChart = echarts.init(document.getElementById('main0'));
+                var col = [1,2];
+                var row = [1,2,3,4,5,6,7,8];
+                var obj = $("#a");
+                var abc = eval($("#a").attr("node0"));
+                var data0 = eval($("#a").attr("pane0"));
+                var data1 = eval($("#a").attr("pane1"));
+                var data2 = eval($("#a").attr("pane2"));
+                var data3 = eval($("#a").attr("pane3"));
+                var data4 = eval($("#a").attr("pane4"));
+                var data5 = eval($("#a").attr("pane5"));
+                var data6 = eval($("#a").attr("pane6"));
+                var data7 = eval($("#a").attr("pane7"));
+                <!--console.log(abc)-->
+                <!--var res = {};-->
+                <!--for(var i = 0; i < abc.length; i ++){-->
+                   <!--if(res[abc[i][1]] == undefined){-->
+                        <!--res[abc[i][1]] = [];-->
+                   <!--}-->
+
+                   <!--res[abc[i][1]].push(abc[i]);-->
+                <!--}-->
+
+                <!--console.log(res);-->
+
+                <!--var data = [];-->
+                <!--for(var i = 0; i < 8; i ++){-->
+                    <!--data.push(0);-->
+                <!--}-->
+
+                <!--var i = 0;-->
+                <!--for(var key in res){-->
+                  <!--data[i++] = res[key];-->
+                <!--}-->
+
+                function convertData(data) {
+                    if(data == 0) return 0;
+                    return data.map((value, index) => {
+                    var x = value[0] % row.length
+                    var y = parseInt(value[0] / (row.length*2))
+                    return [x, y, value[1]]
+                })
+            }
+
+                option = {
+                    title: {
+                    top: 30,
+                    text: 'NODE 0',
+                    left: 'center',
+                    textStyle: {
+                        color: '#000000'
+                        }
+                    },
+                    tooltip: {
+                        position: 'top',
+                    },
+                    animation: false,
+                    grid: {
+                        height: '80%',
+                        width:'80%',
+                        show:true,
+                    },
+                    xAxis: [{
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        axisLabel: {
+                            show: false
+                        },
+                        type: 'category',
+                        position: "top",
+                        data: row,
+                        splitArea: {
+                            show: true
+                        }
+                    },
+                    {
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        axisLabel: {
+                            show: false
+                        },
+                        type: 'value',
+                        position: "top",
+                        max: row.length,
+                        splitArea: {
+                            show: false
+                        },
+                        splitLine: { show: false }
+                    }],
+                    yAxis: [
+                        {
+                            axisLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            axisLabel: {
+                                show: false
+                            },
+                            type: 'category',
+                            data: col,
+                            inverse: true,
+                            splitArea: {
+                                show: true
+                            }
+                        },
+                        {
+                            axisLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            axisLabel: {
+                                show: false
+                            },
+                            type: 'value',
+                            position: "top",
+                            max: col.length,
+                            splitArea: {
+                                show: false
+                            },
+                            splitLine: { show: false }
+                        }],
+                    series: [
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data0),
+                                symbolSize: 20,
+                                color: '#FF3030',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data1),
+                                symbolSize: 20,
+                                color: '#EE9A49',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data2),
+                                symbolSize: 20,
+                                color: '#AEEEEE',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data3),
+                                symbolSize: 20,
+                                color: '#9ACD32',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data4),
+                                symbolSize: 20,
+                                color: '#3A5FCD',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data5),
+                                symbolSize: 20,
+                                color: '#228B22',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data6),
+                                symbolSize: 20,
+                                color: '#00CED1',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                            {
+                                name: 'Node',
+                                type: 'scatter',
+                                data: convertData(data7),
+                                symbolSize: 20,
+                                color: '#A9A9A9',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    formatter: function (params) {
+                                        return `CPU ${params.data[0] + params.data[1] * row.length}, ${params.data[2]}`
+                                    }
+                                },
+                            },
+                        ]
+                    };
+                myChart.setOption(option);
+    </script>
+
+    <div class="chart-group col-sm-12" style="  text-align: center;">
+        <!--<div id="main0"  style="width: 400px;height:400px"></div>-->
+        <div id="RAM0" class="c2" style="width: 60%;height:200px; display: -webkit-inline-box;"></div>
+        <div>{{ memory_data }}</div>
+        <div id="b" memory_data="{{ memory_data }}" memory_name="{{ memory_name }}"></div>
+    </div>
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('RAM0'));
+
+        <!--var data16 = parseInt(obj.attr("pane16"));-->
+        var obj = $("#b");
+        var memory_data = eval($("#b").attr("memory_data"));
+        var memory_name = eval($("#b").attr("memory_name"));
+
+        function convertData(data) {
+                    if(data == 0) return 0;
+                }
+
+        option = {
+            grid: {
+                left: '3%',
+                right: '200',
+                bottom: '3%',
+                containLabel: false
+            },
+            tooltip: {
+            position: 'top',
+
+        },
+            xAxis:  {
+                type: 'value',
+                axisLine: {
+                    show:false
+                },
+                axisTick:{
+                    show:false
+                },
+                axisLabel:{
+                    show:false
+                },
+                splitLine:{
+                    show:false
+                }
+            },
+            yAxis: {
+                type: 'category',
+                axisLine: {
+                    show:false
+                },
+                axisTick:{
+                    show:false
+                },
+                axisLabel:{
+                    show:false
+                },
+            },
+            series: [
+                {
+                    type: 'bar',
+                    name:memory_name[0],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[0],
+                    tooltip: {
+                            position: 'top',
+                            formatter: '{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#FF3030',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[1],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[1],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#EE9A49',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[2],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[2],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#AEEEEE',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[3],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[3],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#9ACD32',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[4],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[4],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#3A5FCD',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[5],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data: memory_data[5],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#228B22',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[6],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[6],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#00CED1',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[7],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[7],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#A9A9A9',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                {
+                    type: 'bar',
+                    name: memory_name[8],
+                    stack: '总量',
+                    barWidth:'50%',
+                    data:memory_data[8],
+                    tooltip: {
+                            position: 'top',
+                            formatter:'{a}:{c}MB',
+                        },
+                    itemStyle:{
+                        color:'#ffffff',
+                        borderColor:'#000000',
+                        borderWidth:1,
+                        emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                    },
+                },
+                ]
+        }
+                    myChart.setOption(option);
+                    </script>
+  {% include "horizon/common/_detail_header.html" %}
+
+{% endblock %}
 {% block main %}
   <div class="row">
     <div class="col-sm-12">
