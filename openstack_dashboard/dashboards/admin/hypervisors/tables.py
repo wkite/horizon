@@ -68,9 +68,13 @@ class AdminHypervisorInstancesTable(tables.DataTable):
     name = tables.WrappingColumn("name",
                                  link="horizon:admin:instances:detail",
                                  verbose_name=_("Instance Name"))
-
-    instance_id = tables.Column("uuid",
-                                verbose_name=_("Instance ID"))
+    hostname = tables.Column("hostname", verbose_name=_("Hostname"))
+    type = tables.Column("type", verbose_name=_("Instance Type"))
+    cpu = tables.Column("vcpus", verbose_name=_("CPU"))
+    memory = tables.Column("memory_mb", verbose_name=_("Memory"))
+    instance_id = tables.Column("uuid", verbose_name=_("Instance ID"))
+    numa_topology = tables.Column("numa_topology",
+                                  verbose_name=_("NUMA Topology"))
 
     def get_object_id(self, server):
         return server['uuid']

@@ -7,9 +7,235 @@
 {% endblock %}
 
 {% block main %}
-  <div class="row">
+<!--<script type="text/javascript" src="{{ STATIC_URL }}js/echarts.min.js"></script>-->
+<script type="text/javascript" src="http://cdn.bootcss.com/echarts/4.1.0-release/echarts.min.js"></script>
+
+{% for node_id in numa_topology.node_ids %}
+  <div  class="col-sm-6">
+    <div id="cpu{{ node_id }}" style="width:80%; height:350px; margin:0 auto"></div>
+      <script type="text/javascript">
+      numa_topology = {{ numa_topology|safe }};
+      numa_node = numa_topology[{{ node_id }}];
+      <!--console.log(numa_topology)-->
+      var myChart = echarts.init(document.getElementById('cpu' + {{ node_id }}));
+      var col = numa_node.cpu_col_row.col;
+      var row = numa_node.cpu_col_row.row;
+      series = [];
+      for (instance in numa_node.instances) {
+        s = {
+        name: 'Node',
+        type: 'scatter',
+        symbolSize: 30,
+        data: convertData(numa_node.instances[instance]),
+        color: numa_topology.color[instance],
+        label: {
+          normal: {
+            show: false
+          },
+            emphasis: {
+              how: false
+            }
+          },
+          itemStyle: {
+            emphasis: {
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          tooltip: {
+            position: 'top',
+            formatter: function (params) {
+              return 'CPU ' + params.data[2] + ': ' + params.data[3]
+            }
+          }
+        }
+        series.push(s);
+      };
+      function convertData(data) {
+        if(data == 0) return 0;
+        return data.map((value, index) => {
+          var x = value[0] % row.length
+          var y = parseInt(value[0] / (row.length * numa_topology.node_ids.length))
+          return [x, y, value[0], value[1]]
+          }
+        )
+      };
+      option = {
+        title: {
+          top: 10,
+          text: 'Node ' + {{ node_id }},
+          subtext: 'CPU',
+          left: 'center',
+          textStyle: {
+            color: '#000000'
+          },
+          subtextStyle: {
+            color: '#000000'
+          }
+        },
+        tooltip: {
+          position: 'top'
+        },
+        animation: false,
+        grid: {
+          height: '80%',
+          left: '5%',
+          right: '5%',
+          show: true
+        },
+        xAxis: [{
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          type: 'category',
+          position: "top",
+          data: row,
+          splitArea: {
+            show: true
+          }
+        }, {
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          type: 'value',
+          position: "top",
+          max: row.length,
+          splitArea: {
+            show: false
+          },
+          splitLine: { show: false }
+        }],
+        yAxis: [
+        {
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          type: 'category',
+          data: col,
+          inverse: true,
+          splitArea: {
+          show: true
+          }
+        }, {
+          axisLine: {show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          type: 'value',
+          position: "top",
+          max: col.length,
+          splitArea: {
+            show: false
+          },
+          splitLine: {
+            show: false
+          }
+        }],
+        series: series,
+      };
+      myChart.setOption(option);
+    </script>
+    <div id="memory{{ node_id }}" style="width:80%; height:200px; margin:0 auto"></div>
+      <script type="text/javascript">
+      var myChart = echarts.init(document.getElementById('memory' + {{ node_id }}));
+      memory_data = numa_node.memory_data;
+      memory_name = numa_node.memory_name;
+      memory_hostname = numa_node['memory_hostname'];
+      series = [];
+      for (var i = 0; i < memory_data.length; i++) {
+        s = {
+          type: 'bar',
+          name: memory_hostname[i],
+          stack: '总量',
+          barWidth: '80%',
+          data: memory_data[i],
+          tooltip: {
+            position: 'top',
+            formatter: '{a}: {c}MB',
+          },
+          itemStyle:{
+            color: numa_topology.color[memory_name[i]],
+            borderColor: '#000000',
+            borderWidth: 0,
+            emphasis: {
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+        series.push(s);
+      };
+      option = {
+        title: {
+          top: 25,
+          subtext: 'Memory',
+          left: 'center',
+          subtextStyle: {
+            color: '#000000'
+          }
+        },
+        grid: {
+          top: '25%',
+          left: '5%',
+          right: '5%',
+          bottom: '25%'
+        },
+        tooltip: {
+          position: 'top',
+        },
+        xAxis:  {
+          type: 'value',
+          max: numa_node.memory,
+          <!--interval: 8192,-->
+          <!--splitNumber: 8,-->
+          axisLine: {
+            show: false
+          },
+          axisTick:{
+            show: false
+          },
+          axisLabel:{
+            show: true
+          },
+          splitLine:{
+            show: true
+          }
+        },
+        yAxis: {
+          type: 'category',
+          axisLine: {
+            show: false
+          },
+        },
+        series: series
+      };
+      myChart.setOption(option);
+      </script>
+    </div>
+{% endfor %}
     <div class="col-sm-12">
     {{ table.render }}
     </div>
-  </div>
 {% endblock %}
