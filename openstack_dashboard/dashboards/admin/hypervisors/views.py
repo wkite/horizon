@@ -34,12 +34,23 @@ class AdminIndexView(tabs.TabbedTableView):
 
     def get_context_data(self, **kwargs):
         context = super(AdminIndexView, self).get_context_data(**kwargs)
+        zun_used = {'cpu_used': 0, 'mem_used': 0, 'disk_used': 0,
+                    'total_containers': 0}
+        try:
+            zun_used = api.zun.host_stats(self.request)
+        except Exception:
+            exceptions.handle(self.request,
+                              _('Unable to retrieve container statistics.'))
+
         try:
             context["stats"] = api.nova.hypervisor_stats(self.request)
+            context['stats'].vcpus_used += int(zun_used['cpu_used'])
+            context['stats'].memory_mb_used += zun_used['mem_used']
+            context['stats'].local_gb_used += zun_used['disk_used']
+            context['stats'].running_vms += zun_used['total_containers']
         except Exception:
             exceptions.handle(self.request,
                               _('Unable to retrieve hypervisor statistics.'))
-
         return context
 
 

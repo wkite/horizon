@@ -65,5 +65,21 @@ def zunclient(request):
     return c
 
 
+def host_stats(request):
+    hosts = zunclient(request).hosts.list()
+    stats = {'cpu_used': 0, 'mem_used': 0, 'disk_used': 0,
+             'total_containers': 0}
+    for host in hosts:
+        stats['cpu_used'] += host.cpu_used
+        stats['mem_used'] += host.mem_used
+        stats['disk_used'] += host.disk_used
+        stats['total_containers'] += host.total_containers
+    return stats
+
+
+def host_list(request, limit=None, marker=None, sort_key=None, sort_dir=None):
+    return zunclient(request).hosts.list(limit, marker, sort_key, sort_dir)
+
+
 def host_show(request, id):
     return zunclient(request).hosts.get(id)

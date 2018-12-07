@@ -23,9 +23,6 @@ class AdminHypervisorsTable(tables.DataTable):
                                      link="horizon:admin:hypervisors:detail",
                                      verbose_name=_("Hostname"))
 
-    hypervisor_type = tables.Column("hypervisor_type",
-                                    verbose_name=_("Type"))
-
     vcpus_used = tables.Column("vcpus_used",
                                verbose_name=_("VCPUs (used)"))
 

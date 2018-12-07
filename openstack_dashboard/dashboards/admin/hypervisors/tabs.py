@@ -17,6 +17,7 @@ from horizon import tabs
 from horizon.utils import functions as utils
 
 from openstack_dashboard.api import nova
+from openstack_dashboard.api import zun
 from openstack_dashboard.dashboards.admin.hypervisors.compute \
     import tabs as cmp_tabs
 from openstack_dashboard.dashboards.admin.hypervisors import tables
@@ -30,6 +31,8 @@ class HypervisorTab(tabs.TableTab):
 
     def get_hypervisors_data(self):
         hypervisors = []
+        hosts = []
+        hyps = []
         try:
             hypervisors = nova.hypervisor_list(self.request)
             hypervisors.sort(key=utils.natural_sort('hypervisor_hostname'))
@@ -37,7 +40,20 @@ class HypervisorTab(tabs.TableTab):
             exceptions.handle(self.request,
                               _('Unable to retrieve hypervisor information.'))
 
-        return hypervisors
+        try:
+            hosts = zun.host_list(self.request)
+        except Exception:
+            exceptions.handle(self.request,
+                              _('Unable to retrieve container infomation.'))
+        for hypervisor in hypervisors:
+            for host in hosts:
+                if hypervisor.hypervisor_hostname == host.hostname:
+                    hypervisor.vcpus_used += int(host.cpu_used)
+                    hypervisor.memory_mb_used += host.mem_used
+                    hypervisor.local_gb_used += host.disk_used
+                    hypervisor.running_vms += host.total_containers
+            hyps.append(hypervisor)
+        return hyps
 
 
 class HypervisorHostTabs(tabs.TabGroup):
