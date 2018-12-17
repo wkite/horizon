@@ -77,6 +77,17 @@ def host_stats(request):
     return stats
 
 
+def container_stats(request):
+    containers = zunclient(request).containers.list()
+    cpu = 0
+    memory = 0
+    total = len(containers)
+    for container in containers:
+        cpu += container.cpu
+        memory += int(container.memory)
+    return {'cores': cpu, 'ram': memory, 'instances': total}
+
+
 def host_list(request, limit=None, marker=None, sort_key=None, sort_dir=None):
     return zunclient(request).hosts.list(limit, marker, sort_key, sort_dir)
 

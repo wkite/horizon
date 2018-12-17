@@ -146,21 +146,30 @@ class ProjectUsageView(UsageView):
 
     def _get_charts_data(self):
         chart_sections = []
+        zun_stats = {'cores': 0, 'ram': 0, 'instances': 0}
+        try:
+            zun_stats = api.zun.container_stats(self.request)
+        except Exception:
+            exceptions.handle(self.request,
+                              _('Unable to retrieve container statistics.'))
         for section in CHART_DEFS:
-            chart_data = self._process_chart_section(section['charts'])
+            chart_data = self._process_chart_section(section['charts'],
+                                                     zun_stats)
             chart_sections.append({
                 'title': section['title'],
                 'charts': chart_data
             })
         return chart_sections
 
-    def _process_chart_section(self, chart_defs):
+    def _process_chart_section(self, chart_defs, zun_stats):
         charts = []
         for t in chart_defs:
             if t.quota_key not in self.usage.limits:
                 continue
             key = t.quota_key
             used = self.usage.limits[key]['used']
+            if key in [k for k in zun_stats]:
+                used += int(zun_stats[key])
             quota = self.usage.limits[key]['quota']
             text = t.used_phrase
             if text is None:
